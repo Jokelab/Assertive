@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Assertive.Cli": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\dev\\private\\Assertive\\Assertive\\Language\\prog.ass"
+    }
+  }
+}

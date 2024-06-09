@@ -1,0 +1,53 @@
+
+$environment = "dev";
+$stuffToValidate = '{
+    "single": {
+      "resource": {
+        "resourceType": "OperationOutcome",
+        "issue": [
+          {
+            "severity": "error",
+            "code": "invariant",
+            "details": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/dotnet-api-operation-outcome",
+                  "code": "1012"
+                },
+                {
+                  "system": "http://fire.ly/dotnet-sdk-operation-outcome-structdef-reference",
+                  "code": "Consent(http://nictiz.nl/fhir/StructureDefinition/zib-TreatmentDirective).period"
+                }
+              ],
+              "text": "Instance failed constraint per-1 \"If present, start SHALL have a lower value than end\""
+            },
+            "location": [
+              "Consent.period[0], element Consent(http://nictiz.nl/fhir/StructureDefinition/zib-TreatmentDirective).period"
+            ],
+            "expression": [
+              "Consent.period[0], element Consent(http://nictiz.nl/fhir/StructureDefinition/zib-TreatmentDirective).period"
+            ]
+          }
+        ]
+      },
+      "metadata": {
+        "resourceType": "OperationOutcome"
+      }
+    },
+    "messageSchemaVersion": "2021-05-26",
+    "messageId": "015a9420-c087-4af6-9476-402f35da5fa8",
+    "linkedMessageIds": [
+      "12344"
+    ]
+  }';
+
+
+loop from 1 to 20 
+{
+  POST "https://app-firely-{{$environment}}-weu-003.azurewebsites.net/api/Validate"
+    headers {
+      "hello" : "world",
+      "my-custom-header": (5 * 7) + 3
+    }
+    body $stuffToValidate;
+}

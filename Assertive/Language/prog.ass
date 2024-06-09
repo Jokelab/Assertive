@@ -1,0 +1,53 @@
+import "headers.ass";
+$x = FileToString("content/request.txt");
+
+
+Add($defaultHeaders, "foo","bar");
+
+out $defaultHeaders;
+
+out Get($defaultHeaders, "foo");
+
+Remove($defaultHeaders, "foo");
+out $defaultHeaders;
+
+def main{
+
+  GetStarwarsData(5);
+
+  def GetStarwarsPerson($id){ 
+    //get person to retrieve name
+    $person = GET "https://swapi.dev/api/people/{{$id}}" headers $defaultHeaders; 
+    return $person;
+  }
+
+  def PostToWebhook($name, $title){
+  POST "https://webhook.site/2b8be06f-5946-459c-9e99-9ed11b43cc9f" 
+    headers $defaultHeaders
+    body '{
+        "name": "{{$name}}",
+        "title": "{{$title}}",
+      }'
+    ;
+  }
+
+
+  def GetStarwarsData "Get {{$number}} starwars people" ($number){
+
+    loop $i from 1 to $number
+    { 
+        $person = GetStarwarsPerson($i);
+
+        $name = JsonPath($person, "$.name");
+        $firstFilmUrl = JsonPath($person, "$.films[0]");
+
+        //get film to retrieve title
+        $filmResponse = GET "{{$firstFilmUrl}}"; 
+        $filmTitle = JsonPath($filmResponse, "$.title");
+
+        PostToWebhook("{{$name}}", "{{$filmTitle}}");
+    }
+  }
+}
+
+main;

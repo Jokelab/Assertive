@@ -1,0 +1,11 @@
+//header definitions
+
+$defaultHeaders = {
+  "my-custom-header" : (3 * 3) + 5, 
+  "hello": "world",
+   "authorization": GetBearerToken()
+};
+
+def GetBearerToken(){
+    return "Bearer somesecrettoken"; 
+}

@@ -1,0 +1,5 @@
+# ignore Java output and ANTLR results
+*.java
+*.class
+*.interp
+*.tokens
