@@ -1,6 +1,6 @@
 ﻿using System.Net.WebSockets;
 
-namespace Assertive.Server
+namespace Assertive.InterpreterServer
 {
     public interface IWebsocketOutputWriter : IOutputWriter
     {

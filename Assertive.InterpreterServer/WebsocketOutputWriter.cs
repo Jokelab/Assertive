@@ -5,7 +5,7 @@ using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
 
-namespace Assertive.Server
+namespace Assertive.InterpreterServer
 {
     public class WebsocketOutputWriter : IWebsocketOutputWriter
     {

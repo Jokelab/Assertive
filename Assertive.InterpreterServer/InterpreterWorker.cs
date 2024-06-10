@@ -2,15 +2,15 @@ using System.Net.WebSockets;
 using System.Net;
 using System.Text;
 
-namespace Assertive.Server
+namespace Assertive.InterpreterServer
 {
-    public class Worker : BackgroundService
+    public class InterpreterWorker : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
+        private readonly ILogger<InterpreterWorker> _logger;
         private readonly Interpreter _interpreter;
         private readonly IWebsocketOutputWriter _outputWriter;
 
-        public Worker(Interpreter interpreter, IWebsocketOutputWriter outputWriter, ILogger<Worker> logger)
+        public InterpreterWorker(Interpreter interpreter, IWebsocketOutputWriter outputWriter, ILogger<InterpreterWorker> logger)
         {
             _interpreter = interpreter;
             _outputWriter = outputWriter;
