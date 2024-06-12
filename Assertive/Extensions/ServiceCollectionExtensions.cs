@@ -20,7 +20,7 @@ namespace Assertive.Extensions
             services.AddTransient<ProgramVisitor>();
             services.AddTransient<SyntaxErrorListener>();
             services.AddTransient<FunctionStatementVisitor>();
-            services.AddTransient<FunctionFactory>();
+            services.AddSingleton<FunctionFactory>();
 
             RegisterBuiltInFunctions(assertiveOptions);
 

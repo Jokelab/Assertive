@@ -10,7 +10,6 @@ using Assertive.Types;
 using Microsoft.Extensions.Logging;
 using System.Collections.Specialized;
 using System.Diagnostics;
-using System.Net.Http;
 using System.Text;
 using System.Web;
 
@@ -18,7 +17,7 @@ namespace Assertive
 {
     public class ProgramVisitor : AssertiveParserBaseVisitor<Task<Value>>
     {
-        private readonly IRequestDispatcher _requestDispatcher;
+        private IRequestDispatcher _requestDispatcher;
         private readonly FunctionFactory _functionFactory;
         private readonly IEnumerable<IOutputWriter> _outputWriters;
         private readonly ILogger<ProgramVisitor> _logger;
@@ -295,7 +294,7 @@ namespace Assertive
                 throw new InterpretationException("Binary operator not present in expression", context, FilePath);
 
             var leftValue = await Visit(context.operandLeft).ConfigureAwait(false) as BooleanValue;
-            if (leftValue == null) throw new InterpretationException("Expected a boolean value for left side of 'and' expression", context, FilePath);
+            if (leftValue == null) throw new InterpretationException("Expected a boolean value for left side of logical expression", context, FilePath);
 
             switch (opToken.Type)
             {
@@ -303,7 +302,7 @@ namespace Assertive
                 case AssertiveLexer.AND:
                     {
                         var rightValue = await Visit(context.operandRight).ConfigureAwait(false) as BooleanValue;
-                        if (rightValue == null) throw new InterpretationException("Expected a boolean value for right side of 'and' expression", context, FilePath);
+                        if (rightValue == null) throw new InterpretationException("Expected a boolean value for right side of 'and' expression", context.operandRight, FilePath);
                         return new BooleanValue(leftValue.Value && rightValue.Value);
 
                     }
@@ -312,7 +311,7 @@ namespace Assertive
                         if (leftValue.Value) return new BooleanValue(true); //immediately return if first operand is true
 
                         var rightValue = await Visit(context.operandRight).ConfigureAwait(false) as BooleanValue;
-                        if (rightValue == null) throw new InterpretationException("Expected a boolean value for right side of 'or' expression", context, FilePath);
+                        if (rightValue == null) throw new InterpretationException("Expected a boolean value for right side of 'or' expression", context.operandRight, FilePath);
                         return new BooleanValue(leftValue.Value || rightValue.Value);
                     }
                 default: throw new InterpretationException($"Unsupported logical operator {opToken.Type} Text: {opToken.Text}", context, FilePath);
@@ -459,7 +458,7 @@ namespace Assertive
             var functionName = context.ID().GetText();
 
             //check if it is a built in function
-            var function = _functionFactory.CreateFunction(functionName);
+            var function = _functionFactory.GetFunction(functionName);
             if (function != null)
             {
                 var actualParamCount = context.expression().Length;
@@ -539,7 +538,7 @@ namespace Assertive
                 }
                 else
                 {
-                    throw new InterpretationException($"Function {functionName} called but it was not found.", context, FilePath);
+                    throw new InterpretationException($"Function {functionName} called but it was not found", context, FilePath);
                 }
             }
             return returnValue;

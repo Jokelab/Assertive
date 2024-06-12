@@ -18,12 +18,12 @@ namespace Assertive.Requests
             return Interlocked.Increment(ref _currentId);
         }
 
-        public HttpRequest CreateRequest(HttpRequestMessage request)
+        public virtual HttpRequest CreateRequest(HttpRequestMessage request)
         {
             return new HttpRequest() { Id = GetNextId(), Request = request };
         }
 
-        public async Task SendRequest(HttpRequest requestModel)
+        public virtual async Task SendRequest(HttpRequest requestModel)
         {
             var sw = new Stopwatch();
             sw.Start();

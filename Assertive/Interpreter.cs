@@ -1,4 +1,4 @@
-﻿using Antlr4.Runtime;
+﻿using Assertive.Exceptions;
 using Assertive.Models;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
@@ -19,11 +19,11 @@ namespace Assertive
             _logger = logger;
         }
 
-        public async Task ExecuteFile(string path)
+        public async Task<InterpretationResult> ExecuteFile(string path)
         {
             _importedFiles.Clear();
             _importedFiles.Add(path);
-            await Execute(_fileSystemService.GetFileContent(path)).ConfigureAwait(false);
+            return await Execute(_fileSystemService.GetFileContent(path)).ConfigureAwait(false);
         }
     
 
@@ -32,24 +32,41 @@ namespace Assertive
             return _importedFiles.Count > 0 ? _importedFiles[0] : Assembly.GetExecutingAssembly().Location;
         }
 
-        public async Task Execute(string program)
+        public async Task<InterpretationResult> Execute(string program, string path)
         {
+            _importedFiles.Clear();
+            _importedFiles.Add(path);
+            return await Execute(program).ConfigureAwait(false);
+        }
 
+        public async Task<InterpretationResult> Execute(string program)
+        {
             var currentPath = GetCurrentPath();
+            var result = new InterpretationResult();
             var parsedDocument = Parser.Parse(program, currentPath);
             if (parsedDocument.SyntaxErrors.Count > 0)
             {
-                return;
+                result.SyntaxErrors.AddRange(parsedDocument.SyntaxErrors);
+                return result;
             }
             var documents = GetImportedDocuments(parsedDocument.Context, currentPath);
             documents.Add(parsedDocument);
 
             foreach (var document in documents)
             {
-                _programVisitor.FilePath = document.Path;
-                //execute main visitor class
-                await _programVisitor.Visit(document.Context).ConfigureAwait(false);
+                try
+                {
+
+                    _programVisitor.FilePath = document.Path;
+                    //execute main visitor class
+                    await _programVisitor.Visit(document.Context).ConfigureAwait(false);
+                }
+                catch (InterpretationException interpretationEx)
+                {
+                    result.SemanticErrors.Add(new SemanticErrorModel() { Context = interpretationEx.Context, FilePath = document.Path, Message = interpretationEx.Message });
+                }
             }
+            return result;
         }
 
         /// <summary>

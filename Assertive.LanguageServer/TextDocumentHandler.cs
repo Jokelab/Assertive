@@ -10,9 +10,11 @@ namespace Assertive.LanguageServer
     public class TextDocumentHandler : IDidChangeTextDocumentHandler
     {
         private readonly ILanguageServerFacade _facade;
-        public TextDocumentHandler(ILanguageServerFacade facade)
+        private readonly Interpreter _interpreter;
+        public TextDocumentHandler(ILanguageServerFacade facade, Interpreter interpreter)
         {
             _facade = facade;
+            _interpreter = interpreter;
         }
         public TextDocumentSyncKind Change { get; } = TextDocumentSyncKind.Full;
 
@@ -26,15 +28,16 @@ namespace Assertive.LanguageServer
         }
 
 
-        public Task<Unit> Handle(DidChangeTextDocumentParams request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(DidChangeTextDocumentParams request, CancellationToken cancellationToken)
         {
             // Perform syntax and semantic analysis here
             var diagnostics = new List<Diagnostic>();
-            // Populate diagnostics with errors and warnings
 
-            var parsedDocument = Parser.Parse(request.ContentChanges.First().Text, request.TextDocument.Uri.ToString());
+            var interpretationResult = await _interpreter.Execute(
+                request.ContentChanges.First().Text,
+                request.TextDocument.Uri.GetFileSystemPath()).ConfigureAwait(false);
 
-            foreach (var syntaxError in parsedDocument.SyntaxErrors)
+            foreach (var syntaxError in interpretationResult.SyntaxErrors)
             {
                 var startPos = new Position(syntaxError.OffendingSymbol.Line - 1, syntaxError.OffendingSymbol.Column);
                 var endPos = new Position(syntaxError.OffendingSymbol.Line - 1, syntaxError.OffendingSymbol.Column + (syntaxError.OffendingSymbol.StopIndex - syntaxError.OffendingSymbol.StartIndex));
@@ -46,8 +49,23 @@ namespace Assertive.LanguageServer
                     Message = syntaxError.Message!
                 });
             }
-            // Example: Creating a diagnostic
 
+            if (interpretationResult.SyntaxErrors.Count == 0)
+            {
+                //syntax OK
+                foreach (var semanticError in interpretationResult.SemanticErrors)
+                {
+                    var startPos = new Position(semanticError.Context.Start.Line - 1, semanticError.Context.Start.Column);
+                    var endPos = new Position(semanticError.Context.Stop.Line - 1, semanticError.Context.Stop.Column);
+                    diagnostics.Add(new Diagnostic
+                    {
+                        Source = semanticError.Context.GetText(),
+                        Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(startPos, endPos),
+                        Severity = DiagnosticSeverity.Error,
+                        Message = semanticError.Message
+                    });
+                }
+            }
 
             // Send diagnostics to the client
             var documentUri = request.TextDocument.Uri;
@@ -60,7 +78,7 @@ namespace Assertive.LanguageServer
 
             _facade.TextDocument.PublishDiagnostics(publishDiagnosticsParams);
 
-            return Unit.Task;
+            return new Unit();
         }
 
 

@@ -33,7 +33,7 @@ namespace Assertive.Extensions
 
         public IAssertiveOptions AddBuiltInFunction<T>() where T : IFunction
         {
-            _services.AddKeyedSingleton(serviceType: typeof(IFunction), serviceKey: typeof(T).Name, implementationType: typeof(T));
+            _services.AddScoped(serviceType: typeof(IFunction), implementationType: typeof(T));
             return this;
         }
     }

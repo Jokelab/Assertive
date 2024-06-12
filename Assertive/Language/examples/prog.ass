@@ -1,5 +1,5 @@
 import "headers.ass";
-$x = FileToString("content/request.txt");
+$x = FileToString("request.txt");
 
 
 Add($defaultHeaders, "foo","bar");
@@ -10,6 +10,11 @@ out Get($defaultHeaders, "foo");
 
 Remove($defaultHeaders, "foo");
 out $defaultHeaders;
+
+$a = 8;
+$a = "767";
+$x = 3 * 76;
+
 
 def main{
 
