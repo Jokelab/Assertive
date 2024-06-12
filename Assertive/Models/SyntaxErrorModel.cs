@@ -10,6 +10,8 @@ namespace Assertive.Models
         public string? Message { get; set; }
         public RecognitionException? RecognitionException { get; set; }
 
+        public required IToken OffendingSymbol { get; set; }
+
         public override string ToString()
         {
             return string.Format("line:{0} col:{1} src:{2} msg:{3}", Line, CharPosition, SourceName, Message);

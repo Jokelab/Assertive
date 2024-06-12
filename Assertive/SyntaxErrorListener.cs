@@ -3,7 +3,7 @@ using Assertive.Models;
 
 namespace Assertive
 {
-    public class ErrorListener : BaseErrorListener
+    public class SyntaxErrorListener : BaseErrorListener
     {
         public List<SyntaxErrorModel> SyntaxErrors = new();
         public override void SyntaxError(
@@ -12,7 +12,7 @@ namespace Assertive
             int charPositionInLine, string msg,
             RecognitionException e)
         {
-            SyntaxErrors.Add(new SyntaxErrorModel() { Line = line, CharPosition = charPositionInLine, SourceName = recognizer.InputStream.SourceName, Message = msg, RecognitionException = e });
+            SyntaxErrors.Add(new SyntaxErrorModel() { Line = line, CharPosition = charPositionInLine, SourceName = recognizer.InputStream.SourceName, Message = msg, RecognitionException = e, OffendingSymbol = offendingSymbol });
         }
     }
 }

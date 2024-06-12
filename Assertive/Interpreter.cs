@@ -8,15 +8,13 @@ namespace Assertive
     public class Interpreter
     {
         private readonly ProgramVisitor _programVisitor;
-        private readonly ErrorListener _errorListener;
         private readonly IFileSystemService _fileSystemService;
         private readonly ILogger<Interpreter> _logger;
         private List<string> _importedFiles = [];
 
-        public Interpreter(ProgramVisitor programVisitor, ErrorListener errorListener, IFileSystemService fileSystemService, ILogger<Interpreter> logger)
+        public Interpreter(ProgramVisitor programVisitor, IFileSystemService fileSystemService, ILogger<Interpreter> logger)
         {
             _programVisitor = programVisitor;
-            _errorListener = errorListener;
             _fileSystemService = fileSystemService;
             _logger = logger;
         }
@@ -27,11 +25,7 @@ namespace Assertive
             _importedFiles.Add(path);
             await Execute(_fileSystemService.GetFileContent(path)).ConfigureAwait(false);
         }
-
-        public List<SyntaxErrorModel> GetSyntaxErrors()
-        {
-            return _errorListener.SyntaxErrors;
-        }
+    
 
         private string GetCurrentPath()
         {
@@ -41,15 +35,14 @@ namespace Assertive
         public async Task Execute(string program)
         {
 
-            var startFileParser = CreateParser(program);
-            AssertiveParser.ProgramContext startContext = startFileParser.program();
-            if (_errorListener.SyntaxErrors.Count > 0)
+            var currentPath = GetCurrentPath();
+            var parsedDocument = Parser.Parse(program, currentPath);
+            if (parsedDocument.SyntaxErrors.Count > 0)
             {
                 return;
             }
-            var currentPath = GetCurrentPath();
-            var documents = GetImportedDocuments(startContext, currentPath);
-            documents.Add(new ParsedDocument(startContext, currentPath));
+            var documents = GetImportedDocuments(parsedDocument.Context, currentPath);
+            documents.Add(parsedDocument);
 
             foreach (var document in documents)
             {
@@ -84,41 +77,19 @@ namespace Assertive
                 _importedFiles.Add(path);
                 var fileContent = _fileSystemService.GetFileContent(path);
 
-                var parser = CreateParser(fileContent);
-                var importContext = parser.program();
-                if (_errorListener.SyntaxErrors.Count > 0)
+                var parsedDocument = Parser.Parse(fileContent, path);
+                if (parsedDocument.SyntaxErrors.Count > 0)
                 {
                     _logger.LogError($"Syntax error(s) in imported file {path}");
                     break;
                 }
-                var childImports = GetImportedDocuments(importContext, path);
+                var childImports = GetImportedDocuments(parsedDocument.Context, path);
                 importedPrograms.AddRange(childImports);
 
-                importedPrograms.Add(new ParsedDocument(importContext, path));
+                importedPrograms.Add(parsedDocument);
             }
             return importedPrograms;
         }
-
-        public AssertiveParser CreateParser(string program)
-        {
-            var inputStream = new AntlrInputStream(program);
-            var lexer = new AssertiveLexer(inputStream);
-            var commonTokenStream = new CommonTokenStream(lexer);
-            var parser = new AssertiveParser(commonTokenStream);
-            parser.RemoveErrorListeners();
-            parser.AddErrorListener(_errorListener);
-            return parser;
-        }
-
-        private class ParsedDocument
-        {
-            public ParsedDocument(AssertiveParser.ProgramContext context, string path)
-            {
-                Context = context;
-                Path = path;
-            }
-            public AssertiveParser.ProgramContext Context { get; }
-            public string Path { get; }
-        }
+     
     }
 }

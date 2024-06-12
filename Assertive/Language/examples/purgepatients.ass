@@ -1,6 +1,5 @@
 import "testpatients.ass";
 
-
 $total = 0;
 each($patientId in $patients){
     $purgeResponse = POST "https://app-firely-acc-weu-002.azurewebsites.net/Patient/PAT-{{$patientId}}/$purge";

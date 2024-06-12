@@ -1,9 +1,7 @@
-def callApi "Test API call"{
+def callApi "Test API call" {
     loop from 1 to 10 parallel 10{
-
         POST "https://webhook.site/75bad574-77a6-4acc-801c-50951e8eaf6f" 
         body FileToStream("content/image.bmp");
-
     }
 }
 

@@ -6,7 +6,7 @@ namespace Assertive.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddAssertive(this IServiceCollection services, Action<IAssertiveOptions>? configureOptions)
+        public static IServiceCollection AddAssertive(this IServiceCollection services, Action<IAssertiveOptions>? configureOptions = null)
         {
             services.AddHttpClient();
             services.AddTransient<IRequestDispatcher, RequestDispatcher>();
@@ -18,7 +18,7 @@ namespace Assertive.Extensions
             services.AddTransient<IFileSystemService, FileSystemService>();
             services.AddTransient<Interpreter>();
             services.AddTransient<ProgramVisitor>();
-            services.AddTransient<ErrorListener>();
+            services.AddTransient<SyntaxErrorListener>();
             services.AddTransient<FunctionStatementVisitor>();
             services.AddTransient<FunctionFactory>();
 
