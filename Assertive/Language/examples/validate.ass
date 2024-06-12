@@ -42,12 +42,8 @@ $stuffToValidate = '{
   }';
 
 
-loop from 1 to 20 
+loop from 1 to 200 parallel 50
 {
   POST "https://app-firely-{{$environment}}-weu-003.azurewebsites.net/api/Validate"
-    headers {
-      "hello" : "world",
-      "my-custom-header": (5 * 7) + 3
-    }
     body $stuffToValidate;
 }
