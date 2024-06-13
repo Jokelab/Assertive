@@ -538,7 +538,7 @@ namespace Assertive
                 }
                 else
                 {
-                    throw new InterpretationException($"Function {functionName} called but it was not found", context, FilePath);
+                    throw new InterpretationException($"Function '{functionName}' called but it was not found in the current scope", context, FilePath);
                 }
             }
             return returnValue;

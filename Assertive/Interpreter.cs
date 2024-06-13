@@ -25,7 +25,7 @@ namespace Assertive
             _importedFiles.Add(path);
             return await Execute(_fileSystemService.GetFileContent(path)).ConfigureAwait(false);
         }
-    
+
 
         private string GetCurrentPath()
         {
@@ -49,7 +49,7 @@ namespace Assertive
                 result.SyntaxErrors.AddRange(parsedDocument.SyntaxErrors);
                 return result;
             }
-            var documents = GetImportedDocuments(parsedDocument.Context, currentPath);
+            var documents = GetImportedDocuments(parsedDocument.Context, currentPath, result);
             documents.Add(parsedDocument);
 
             foreach (var document in documents)
@@ -75,7 +75,7 @@ namespace Assertive
         /// <param name="context"></param>
         /// <param name="programBuilder"></param>
         /// <returns></returns>
-        private List<ParsedDocument> GetImportedDocuments(AssertiveParser.ProgramContext context, string currentPath)
+        private List<ParsedDocument> GetImportedDocuments(AssertiveParser.ProgramContext context, string currentPath, InterpretationResult interpretationResult)
         {
             var importedPrograms = new List<ParsedDocument>();
             if (context.importStatements().ChildCount == 0)
@@ -83,12 +83,14 @@ namespace Assertive
                 return importedPrograms;
             }
             var imports = context.importStatements().children;
-            foreach (var importStatement in imports)
+            for (var i = 0; i < imports.Count; i++)
             {
-                var path = _fileSystemService.CalculateRelativePath(currentPath, importStatement.GetChild(1).GetText()).Replace("\"", "").Replace("'", "");
+                var importStatement = context.importStatements().importStatement(i);
+                var importFileName = importStatement.GetChild(1).GetText();
+                var path = _fileSystemService.CalculateRelativePath(currentPath, importFileName).Replace("\"", "").Replace("'", "");
                 if (_importedFiles.Contains(path))
                 {
-                    _logger.LogError($"Already imported file {path}. The same file cannot be imported multiple times.");
+                    interpretationResult.SemanticErrors.Add(new SemanticErrorModel() { Context = importStatement, FilePath = path, Message = $"Already imported file {importFileName} in this file or one of its imports. The same file cannot be imported multiple times." });
                     continue;
                 }
                 _importedFiles.Add(path);
@@ -97,16 +99,16 @@ namespace Assertive
                 var parsedDocument = Parser.Parse(fileContent, path);
                 if (parsedDocument.SyntaxErrors.Count > 0)
                 {
-                    _logger.LogError($"Syntax error(s) in imported file {path}");
+                    interpretationResult.SemanticErrors.Add(new SemanticErrorModel() { Context = importStatement, FilePath = path, Message = $"Syntax errors found in imported file {importFileName}" });
                     break;
                 }
-                var childImports = GetImportedDocuments(parsedDocument.Context, path);
+                var childImports = GetImportedDocuments(parsedDocument.Context, path, interpretationResult);
                 importedPrograms.AddRange(childImports);
 
                 importedPrograms.Add(parsedDocument);
             }
             return importedPrograms;
         }
-     
+
     }
 }
