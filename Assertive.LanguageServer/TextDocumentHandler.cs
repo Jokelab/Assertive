@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using Assertive.Models;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
@@ -10,11 +12,11 @@ namespace Assertive.LanguageServer
     public class TextDocumentHandler : IDidChangeTextDocumentHandler
     {
         private readonly ILanguageServerFacade _facade;
-        private readonly Interpreter _interpreter;
-        public TextDocumentHandler(ILanguageServerFacade facade, Interpreter interpreter)
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+        public TextDocumentHandler(ILanguageServerFacade facade, IServiceScopeFactory serviceScopeFactory)
         {
             _facade = facade;
-            _interpreter = interpreter;
+            _serviceScopeFactory = serviceScopeFactory;
         }
         public TextDocumentSyncKind Change { get; } = TextDocumentSyncKind.Full;
 
@@ -32,10 +34,16 @@ namespace Assertive.LanguageServer
         {
             // Perform syntax and semantic analysis here
             var diagnostics = new List<Diagnostic>();
+            InterpretationResult interpretationResult = new();
 
-            var interpretationResult = await _interpreter.Execute(
-                request.ContentChanges.First().Text,
-                request.TextDocument.Uri.GetFileSystemPath()).ConfigureAwait(false);
+            using (IServiceScope scope = _serviceScopeFactory.CreateScope())
+            {
+                var interpreter = scope.ServiceProvider.GetRequiredService<Interpreter>();
+                interpretationResult = await interpreter.Execute(
+                    request.ContentChanges.First().Text,
+                    request.TextDocument.Uri.GetFileSystemPath())
+                    .ConfigureAwait(false);
+            }
 
             foreach (var syntaxError in interpretationResult.SyntaxErrors)
             {

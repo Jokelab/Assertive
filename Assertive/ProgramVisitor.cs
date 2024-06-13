@@ -715,7 +715,13 @@ namespace Assertive
             {
                 throw new InterpretationException("Only 1 body section allowed", context, FilePath);
             }
+            var requestModel = await SendRequest(requestMessage);
 
+            return new HttpRequestValue(requestModel);
+        }
+
+        public virtual async Task<HttpRequest> SendRequest(HttpRequestMessage requestMessage)
+        {
             var requestModel = _requestDispatcher.CreateRequest(requestMessage);
 
             foreach (var writer in _outputWriters)
@@ -729,8 +735,7 @@ namespace Assertive
             {
                 await writer.RequestEnd(requestModel).ConfigureAwait(false);
             }
-
-            return new HttpRequestValue(requestModel);
+            return requestModel;
         }
     }
 }
