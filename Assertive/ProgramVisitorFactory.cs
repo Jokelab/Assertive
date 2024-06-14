@@ -15,7 +15,7 @@ namespace Assertive
         {
             if (validation)
             {
-                _serviceProvider.GetRequiredService<ValidationProgramVisitor>();
+                return _serviceProvider.GetRequiredService<ValidationProgramVisitor>();
             }
             return _serviceProvider.GetRequiredService<ProgramVisitor>();
         }

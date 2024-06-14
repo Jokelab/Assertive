@@ -15,5 +15,6 @@ await server.WaitForExit;
 
 static void ConfigureServices(IServiceCollection services)
 {
+    services.AddSingleton<DocumentManager>();
     services.AddAssertive(opt => opt.AddOutputWriter<LanguageServerOutputWriter>());
 }
