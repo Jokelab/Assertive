@@ -17,11 +17,11 @@ namespace Assertive.Extensions
             {
                 configureOptions(assertiveOptions);
             }
-            services.AddTransient<IFileSystemService, FileSystemService>();
-            services.AddTransient<Interpreter>();
-            services.AddTransient<ProgramVisitor>();
+            services.AddSingleton<IFileSystemService, FileSystemService>();
+            services.AddScoped<Interpreter>();
+            services.AddScoped<ProgramVisitor>();
             
-            services.AddTransient<ProgramVisitorFactory>();
+            services.AddSingleton<ProgramVisitorFactory>();
 
             services.AddTransient<SyntaxErrorListener>();
             services.AddTransient<FunctionStatementVisitor>();
@@ -31,7 +31,7 @@ namespace Assertive.Extensions
 
             //special services for semantic validation purposes
             services.AddSingleton<ValidationRequestDispatcher>();
-            services.AddTransient(sp => {
+            services.AddSingleton(sp => {
                 return new ValidationProgramVisitor(new ValidationRequestDispatcher(),
                     sp.GetRequiredService<FunctionFactory>(),
                     [], //no output writers 
