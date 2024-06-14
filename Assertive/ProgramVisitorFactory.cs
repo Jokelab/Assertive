@@ -11,9 +11,9 @@ namespace Assertive
             _serviceProvider = serviceProvider;
         }
 
-        public ProgramVisitor CreateVisitor(bool validation)
+        public ProgramVisitor CreateVisitor(InterpreterMode mode)
         {
-            if (validation)
+            if (mode == InterpreterMode.Validate)
             {
                 return _serviceProvider.GetRequiredService<ValidationProgramVisitor>();
             }

@@ -55,8 +55,7 @@ namespace Assertive
             var documents = GetImportedDocuments(parsedDocument.Context, currentPath, result);
             documents.Add(parsedDocument);
 
-            var visitor = _programVisitorFactory.CreateVisitor(InterpreterMode == InterpreterMode.Validate);
-            
+            var visitor = _programVisitorFactory.CreateVisitor(InterpreterMode);
             foreach (var document in documents)
             {
                 try
