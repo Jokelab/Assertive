@@ -7,17 +7,19 @@ namespace Assertive
 {
     public class Interpreter
     {
-        private readonly ProgramVisitor _programVisitor;
+        private readonly ProgramVisitorFactory _programVisitorFactory;
         private readonly IFileSystemService _fileSystemService;
         private readonly ILogger<Interpreter> _logger;
         private List<string> _importedFiles = [];
 
-        public Interpreter(ProgramVisitor programVisitor, IFileSystemService fileSystemService, ILogger<Interpreter> logger)
+        public Interpreter(ProgramVisitorFactory programVisitorFactory, IFileSystemService fileSystemService, ILogger<Interpreter> logger)
         {
-            _programVisitor = programVisitor;
+            _programVisitorFactory = programVisitorFactory;
             _fileSystemService = fileSystemService;
             _logger = logger;
         }
+
+        public InterpreterMode InterpreterMode { get; set; } 
 
         public async Task<InterpretationResult> ExecuteFile(string path)
         {
@@ -25,6 +27,7 @@ namespace Assertive
             _importedFiles.Add(path);
             return await Execute(_fileSystemService.GetFileContent(path)).ConfigureAwait(false);
         }
+
 
 
         private string GetCurrentPath()
@@ -52,14 +55,15 @@ namespace Assertive
             var documents = GetImportedDocuments(parsedDocument.Context, currentPath, result);
             documents.Add(parsedDocument);
 
+            var visitor = _programVisitorFactory.CreateVisitor(InterpreterMode == InterpreterMode.Validate);
+            
             foreach (var document in documents)
             {
                 try
                 {
-
-                    _programVisitor.FilePath = document.Path;
+                    visitor.FilePath = document.Path;
                     //execute main visitor class
-                    await _programVisitor.Visit(document.Context).ConfigureAwait(false);
+                    await visitor.Visit(document.Context).ConfigureAwait(false);
                 }
                 catch (InterpretationException interpretationEx)
                 {

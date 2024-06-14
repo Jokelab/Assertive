@@ -38,6 +38,8 @@ namespace Assertive.LanguageServer
             using (IServiceScope scope = _serviceScopeFactory.CreateScope())
             {
                 var interpreter = scope.ServiceProvider.GetRequiredService<Interpreter>();
+                interpreter.InterpreterMode = InterpreterMode.Validate;
+
                 interpretationResult = await interpreter.Execute(
                     request.ContentChanges.First().Text,
                     request.TextDocument.Uri.GetFileSystemPath())

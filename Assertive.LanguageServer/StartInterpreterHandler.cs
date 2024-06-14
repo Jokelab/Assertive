@@ -5,20 +5,17 @@ namespace Assertive.LanguageServer
 {
     public class StartInterpreterHandler : IJsonRpcNotificationHandler<InterpretationRequest>
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly Interpreter _interpreter;
 
-        public StartInterpreterHandler(IServiceProvider serviceProvider)
+        public StartInterpreterHandler(Interpreter interpreter)
         {
-            _serviceProvider = serviceProvider;
+            _interpreter = interpreter;
         }
-
-
 
         public async Task<Unit> Handle(InterpretationRequest request, CancellationToken cancellationToken)
         {
-            var interpreterService = _serviceProvider.GetRequiredService<Interpreter>();
             // Interpretation logic here
-            await interpreterService.ExecuteFile(request.FilePath);
+            await _interpreter.ExecuteFile(request.FilePath);
             return Unit.Value;
         }
     }

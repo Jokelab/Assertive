@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Assertive.Tests", "Assertiv
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Assertive.InterpreterServer", "Assertive.InterpreterServer\Assertive.InterpreterServer.csproj", "{C96819D1-427C-4D4C-BC28-E0F18B956D94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assertive.LanguageServer", "Assertive.LanguageServer\Assertive.LanguageServer.csproj", "{DC1A05BA-7ABC-4980-A138-EDADD66D6330}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Assertive.LanguageServer", "Assertive.LanguageServer\Assertive.LanguageServer.csproj", "{DC1A05BA-7ABC-4980-A138-EDADD66D6330}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
