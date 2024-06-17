@@ -1,5 +1,6 @@
 ﻿using Assertive.Requests;
 using Assertive.Requests.Http;
+using System.Diagnostics;
 
 namespace Assertive
 {
@@ -12,6 +13,7 @@ namespace Assertive
 
         public Task SendRequest(HttpRequest request)
         {
+            request.Response = new HttpResponseMessage();
             return Task.CompletedTask;
         }
     }
