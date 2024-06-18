@@ -20,24 +20,13 @@ namespace Assertive.Extensions
             services.AddSingleton<IFileSystemService, FileSystemService>();
             services.AddScoped<Interpreter>();
             services.AddScoped<ProgramVisitor>();
-            
-            services.AddSingleton<ProgramVisitorFactory>();
+            services.AddScoped<AnalyserVisitor>();
 
             services.AddTransient<SyntaxErrorListener>();
             services.AddTransient<FunctionStatementVisitor>();
             services.AddSingleton<FunctionFactory>();
 
             RegisterBuiltInFunctions(assertiveOptions);
-
-            //special services for semantic validation purposes
-            services.AddSingleton<ValidationRequestDispatcher>();
-            services.AddSingleton(sp => {
-                return new ValidationProgramVisitor(new ValidationRequestDispatcher(),
-                    sp.GetRequiredService<FunctionFactory>(),
-                    [], //no output writers 
-                    sp.GetRequiredService<ILogger<ProgramVisitor>>());
-                    }
-            );
 
             return services;
         }

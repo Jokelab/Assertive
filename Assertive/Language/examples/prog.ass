@@ -27,11 +27,16 @@ def main{
 
   GetStarwarsData(5);
 
-  def GetStarwarsPerson($id){ 
+  def GetStarwarsPerson($id)
+  {
+
     //get person to retrieve name
     $person = GET "https://swapi.dev/api/people/{{$id}}" headers $defaultHeaders; 
     return $person;
   }
+
+
+  GetStarwarsPerson(4);
 
   def PostToWebhook($name, $title){
   POST "https://webhook.site/2b8be06f-5946-459c-9e99-9ed11b43cc9f" 
@@ -43,11 +48,8 @@ def main{
     ;
   }
 
-
   def GetStarwarsData "Get {{$number}} starwars people" ($number){
-
-    loop $i from 1 to $number
-    { 
+  
         $person = GetStarwarsPerson($i);
 
         $name = JsonPath($person, "$.name");
@@ -58,7 +60,7 @@ def main{
         $filmTitle = JsonPath($filmResponse, "$.title");
 
         PostToWebhook("{{$name}}", "{{$filmTitle}}");
-    }
+    
   }
 }
 

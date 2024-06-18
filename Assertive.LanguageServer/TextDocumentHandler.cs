@@ -32,7 +32,7 @@ namespace Assertive.LanguageServer
         }
 
 
-        public async Task<Unit> Handle(DidChangeTextDocumentParams request, CancellationToken cancellationToken)
+        public Task<Unit> Handle(DidChangeTextDocumentParams request, CancellationToken cancellationToken)
         {
             if (!_documentManager.HasDocument(request.TextDocument.Uri))
             {
@@ -42,26 +42,25 @@ namespace Assertive.LanguageServer
             // Apply changes to the document
             _documentManager.ApplyChanges(request.TextDocument.Uri, request.ContentChanges);
 
-            await ValidateDocumentAsync(request.TextDocument.Uri, _documentManager.GetDocumentContent(request.TextDocument.Uri), request.TextDocument.Version);
+            AnalyseDocument(request.TextDocument.Uri, _documentManager.GetDocumentContent(request.TextDocument.Uri), request.TextDocument.Version);
 
-            return new Unit();
+            return Task.FromResult(new Unit());
         }
 
-        public async Task<Unit> Handle(DidSaveTextDocumentParams request, CancellationToken cancellationToken)
+        public Task<Unit> Handle(DidSaveTextDocumentParams request, CancellationToken cancellationToken)
         {
             var content = File.ReadAllText(request.TextDocument.Uri.GetFileSystemPath());
             _documentManager.SetDocument(request.TextDocument.Uri, content);
-            await ValidateDocumentAsync(request.TextDocument.Uri, content);
-            return new Unit();
+            AnalyseDocument(request.TextDocument.Uri, content);
+            return Task.FromResult(new Unit());
         }
 
-        public async Task<Unit> Handle(DidOpenTextDocumentParams request, CancellationToken cancellationToken)
+        public Task<Unit> Handle(DidOpenTextDocumentParams request, CancellationToken cancellationToken)
         {
-            
             var content = File.ReadAllText(request.TextDocument.Uri.GetFileSystemPath());
             _documentManager.SetDocument(request.TextDocument.Uri, content);
-            await ValidateDocumentAsync(request.TextDocument.Uri, content, request.TextDocument.Version);
-            return new Unit();
+            AnalyseDocument(request.TextDocument.Uri, content, request.TextDocument.Version);
+            return Task.FromResult(new Unit());
         }
 
         TextDocumentSaveRegistrationOptions IRegistration<TextDocumentSaveRegistrationOptions, TextSynchronizationCapability>.GetRegistrationOptions(TextSynchronizationCapability capability, ClientCapabilities clientCapabilities)
@@ -80,7 +79,7 @@ namespace Assertive.LanguageServer
             };
         }
 
-        private async Task ValidateDocumentAsync(DocumentUri documentUri, string content, int? version = null)
+        private void AnalyseDocument(DocumentUri documentUri, string content, int? version = null)
         {
             var diagnostics = new List<Diagnostic>();
             InterpretationResult interpretationResult = new();
@@ -88,12 +87,9 @@ namespace Assertive.LanguageServer
             using (IServiceScope scope = _serviceScopeFactory.CreateScope())
             {
                 var interpreter = scope.ServiceProvider.GetRequiredService<Interpreter>();
-                interpreter.InterpreterMode = InterpreterMode.Validate;
-
-                interpretationResult = await interpreter.Execute(
+                interpretationResult = interpreter.Analyse(
                     content,
-                    documentUri.GetFileSystemPath())
-                    .ConfigureAwait(false);
+                    documentUri.GetFileSystemPath());
             }
 
             foreach (var syntaxError in interpretationResult.SyntaxErrors)
@@ -127,7 +123,7 @@ namespace Assertive.LanguageServer
             }
 
             // Send diagnostics to the client
-        
+
             var publishDiagnosticsParams = new PublishDiagnosticsParams
             {
                 Uri = documentUri,

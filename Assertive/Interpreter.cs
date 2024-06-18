@@ -7,19 +7,17 @@ namespace Assertive
 {
     public class Interpreter
     {
-        private readonly ProgramVisitorFactory _programVisitorFactory;
+        private readonly ProgramVisitor _programVisitor;
+        private readonly AnalyserVisitor _analyserVisitor;
         private readonly IFileSystemService _fileSystemService;
-        private readonly ILogger<Interpreter> _logger;
         private List<string> _importedFiles = [];
 
-        public Interpreter(ProgramVisitorFactory programVisitorFactory, IFileSystemService fileSystemService, ILogger<Interpreter> logger)
+        public Interpreter(ProgramVisitor programVisitor, AnalyserVisitor analyserVisitor, IFileSystemService fileSystemService)
         {
-            _programVisitorFactory = programVisitorFactory;
+            _programVisitor = programVisitor;
+            _analyserVisitor = analyserVisitor;
             _fileSystemService = fileSystemService;
-            _logger = logger;
         }
-
-        public InterpreterMode InterpreterMode { get; set; } 
 
         public async Task<InterpretationResult> ExecuteFile(string path)
         {
@@ -28,18 +26,9 @@ namespace Assertive
             return await Execute(_fileSystemService.GetFileContent(path)).ConfigureAwait(false);
         }
 
-
-
         private string GetCurrentPath()
         {
             return _importedFiles.Count > 0 ? _importedFiles[0] : Assembly.GetExecutingAssembly().Location;
-        }
-
-        public async Task<InterpretationResult> Execute(string program, string path)
-        {
-            _importedFiles.Clear();
-            _importedFiles.Add(path);
-            return await Execute(program).ConfigureAwait(false);
         }
 
         public async Task<InterpretationResult> Execute(string program)
@@ -55,19 +44,48 @@ namespace Assertive
             var documents = GetImportedDocuments(parsedDocument.Context, currentPath, result);
             documents.Add(parsedDocument);
 
-            var visitor = _programVisitorFactory.CreateVisitor(InterpreterMode);
             foreach (var document in documents)
             {
                 try
                 {
-                    visitor.FilePath = document.Path;
+                    _programVisitor.FilePath = document.Path;
                     //execute main visitor class
-                    await visitor.Visit(document.Context).ConfigureAwait(false);
+                    await _programVisitor.Visit(document.Context).ConfigureAwait(false);
                 }
                 catch (InterpretationException interpretationEx)
                 {
                     result.SemanticErrors.Add(new SemanticErrorModel() { Context = interpretationEx.Context, FilePath = document.Path, Message = interpretationEx.Message });
                 }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Analyses the program for syntax and semantic errors, without actually executing requests
+        /// </summary>
+        /// <param name="program"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public InterpretationResult Analyse(string program, string path)
+        {
+            _importedFiles.Clear();
+            _importedFiles.Add(path);
+            var currentPath = GetCurrentPath();
+            var result = new InterpretationResult();
+            var parsedDocument = Parser.Parse(program, currentPath);
+            if (parsedDocument.SyntaxErrors.Count > 0)
+            {
+                result.SyntaxErrors.AddRange(parsedDocument.SyntaxErrors);
+                return result;
+            }
+            var documents = GetImportedDocuments(parsedDocument.Context, currentPath, result);
+            documents.Add(parsedDocument);
+
+            foreach (var document in documents)
+            {
+                _analyserVisitor.FilePath = document.Path;
+                _analyserVisitor.Visit(document.Context);
+                result.SemanticErrors.AddRange(_analyserVisitor.SemanticErrors);
             }
             return result;
         }
