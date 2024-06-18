@@ -12,9 +12,8 @@ def GetBearerToken(){
 
 out "Hi";
 
-loop from 1 to 5
+loop from 1 to 100
 {
   $res = GET "https://www.google.com";
-  assert StatusCode($res) = 200;
-  
+  assert StatusCode($res) = 200 "Success";
 }

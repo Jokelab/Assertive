@@ -61,7 +61,7 @@ namespace Assertive
         public override Task<Value> VisitFunctionStatement([NotNull] AssertiveParser.FunctionStatementContext context)
         {
             var scope = _scopes.Peek();
-            scope.StoreFunction(context.ID().GetText(), context);
+            scope.StoreFunction(context.functionName.Text, context);
             return Task.FromResult<Value>(new VoidValue());
         }
 
@@ -616,6 +616,7 @@ namespace Assertive
             return await val.ConfigureAwait(false);
         }
 
+
         public override async Task<Value> VisitRequestInvocation([NotNull] AssertiveParser.RequestInvocationContext context)
         {
             var requestMessage = new HttpRequestMessage();
@@ -717,8 +718,18 @@ namespace Assertive
             }
             var requestModel = await SendRequest(requestMessage);
 
+            if (context.assertFunction != null)
+            {
+                //call the specified assert function with the request as parameter
+            }
+            else
+            {
+                //call all the assert functions that were encountered in the call stack up to here
+            }
+
             return new HttpRequestValue(requestModel);
         }
+
 
         public virtual async Task<HttpRequest> SendRequest(HttpRequestMessage requestMessage)
         {
@@ -735,6 +746,8 @@ namespace Assertive
             {
                 await writer.RequestEnd(requestModel).ConfigureAwait(false);
             }
+
+
             return requestModel;
         }
     }

@@ -1,0 +1,21 @@
+$host = "http://swapi.dev/api";
+
+def callApi()
+{
+    GET "{{ $host }}/people/1";
+}
+
+def testPerformance "Test run swapi" ($times){
+    loop from 1 to $times
+    {        
+        callApi();
+    }
+}
+
+testPerformance(5);
+
+
+$a = 4;
+$b = 3 * $a;
+out $b;
+

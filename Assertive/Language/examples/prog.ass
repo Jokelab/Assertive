@@ -1,12 +1,20 @@
 import "headers.ass";
 $x = FileToString("request.txt");
 
+def myfunc() assert defaultAsserts {
+
+}
+
+def assertStuff($req) {
+
+}
+
 
 Add($defaultHeaders, "foo","bar");
 
 out $defaultHeaders;
 
-out Get($defaultHeaders, "foo");
+out Get($defaultHeaders, "foo"); 
 
 Remove($defaultHeaders, "foo");
 out $defaultHeaders;
@@ -14,7 +22,6 @@ out $defaultHeaders;
 $a = 8;
 $a = "767";
 $x = 3 * 76;
-
 
 def main{
 
@@ -55,4 +62,4 @@ def main{
   }
 }
 
-main;
+//main;
