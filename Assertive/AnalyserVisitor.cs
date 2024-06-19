@@ -159,7 +159,7 @@ namespace Assertive
             var loopScope = new Scope(_scopes.Peek());
             _scopes.Push(loopScope);
 
-            //set the loop variable for each iteration
+            //set the loop variable
             loopScope.StoreVariableInCurrentScope(loopVarName, new VoidValue());
 
             //visit each statement in the loop body
@@ -171,8 +171,8 @@ namespace Assertive
 
         public override Value VisitLoopStatement([NotNull] AssertiveParser.LoopStatementContext context)
         {
-            var from = Visit(context.fromExp);
-            var to = Visit(context.toExp);
+            Visit(context.fromExp);
+            Visit(context.toExp);
             var loopScope = new Scope(_scopes.Peek());
             _scopes.Push(loopScope);
 
@@ -183,6 +183,7 @@ namespace Assertive
 
             if (context.VAR() != null)
             {
+                //set the loop variable
                 var loopVarName = context.VAR().GetText();
                 loopScope.StoreVariableInCurrentScope(loopVarName, new VoidValue());
             }
