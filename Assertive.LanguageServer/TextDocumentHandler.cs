@@ -111,7 +111,7 @@ namespace Assertive.LanguageServer
                 foreach (var semanticError in interpretationResult.SemanticErrors)
                 {
                     var startPos = new Position(semanticError.Context.Start.Line - 1, semanticError.Context.Start.Column);
-                    var endPos = new Position(semanticError.Context.Stop.Line - 1, semanticError.Context.Stop.Column);
+                    var endPos = new Position(semanticError.Context.Stop.Line - 1, semanticError.Context.Stop.Column + semanticError.Context.Start.Text.Length);
                     diagnostics.Add(new Diagnostic
                     {
                         Source = semanticError.Context.GetText(),
