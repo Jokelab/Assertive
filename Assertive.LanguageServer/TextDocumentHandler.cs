@@ -14,6 +14,8 @@ namespace Assertive.LanguageServer
         private readonly ILanguageServerFacade _facade;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly DocumentManager _documentManager;
+        private const string AssertiveLanguage = "assertive";
+
         public TextDocumentHandler(ILanguageServerFacade facade, IServiceScopeFactory serviceScopeFactory, DocumentManager documentManager)
         {
             _facade = facade;
@@ -26,7 +28,7 @@ namespace Assertive.LanguageServer
         {
             return new TextDocumentChangeRegistrationOptions()
             {
-                DocumentSelector = TextDocumentSelector.ForLanguage("assertive"),
+                DocumentSelector = TextDocumentSelector.ForLanguage(AssertiveLanguage),
                 SyncKind = Change
             };
         }
@@ -67,7 +69,7 @@ namespace Assertive.LanguageServer
         {
             return new TextDocumentSaveRegistrationOptions()
             {
-                DocumentSelector = TextDocumentSelector.ForLanguage("assertive"),
+                DocumentSelector = TextDocumentSelector.ForLanguage(AssertiveLanguage),
             };
         }
 
@@ -75,7 +77,7 @@ namespace Assertive.LanguageServer
         {
             return new TextDocumentOpenRegistrationOptions()
             {
-                DocumentSelector = TextDocumentSelector.ForLanguage("assertive"),
+                DocumentSelector = TextDocumentSelector.ForLanguage(AssertiveLanguage),
             };
         }
 
