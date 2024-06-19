@@ -12,6 +12,11 @@
             return File.OpenRead(path);
         }
 
+        public bool FileExists(string path)
+        {
+            return File.Exists(path);
+        }
+
         public string CalculateRelativePath(string currentPath, string relativePath)
         {
             // Convert the current path to a full path

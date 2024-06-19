@@ -115,8 +115,14 @@ namespace Assertive
                     continue;
                 }
                 _importedFiles.Add(path);
-                var fileContent = _fileSystemService.GetFileContent(path);
 
+                if (!_fileSystemService.FileExists(path))
+                {
+                    interpretationResult.SemanticErrors.Add(new SemanticErrorModel() { Context = importStatement, FilePath = path, Message = $"Imported file {importFileName} is not found" });
+                    break;
+                }
+
+                var fileContent = _fileSystemService.GetFileContent(path);
                 var parsedDocument = Parser.Parse(fileContent, path);
                 if (parsedDocument.SyntaxErrors.Count > 0)
                 {
