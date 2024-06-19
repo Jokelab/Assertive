@@ -1,6 +1,5 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
-using Assertive.Exceptions;
 using Assertive.Functions;
 using Assertive.Models;
 using Assertive.Types;
@@ -150,6 +149,55 @@ namespace Assertive
                 AddError($"Variable {context.GetText()} not found", context);
             }
             return new VoidValue();
+        }
+
+        public override Value VisitEachStatement([NotNull] AssertiveParser.EachStatementContext context)
+        {
+            Visit(context.expression());
+
+            var loopVarName = context.VAR().GetText();
+            var loopScope = new Scope(_scopes.Peek());
+            _scopes.Push(loopScope);
+
+            //set the loop variable for each iteration
+            loopScope.StoreVariableInCurrentScope(loopVarName, new VoidValue());
+
+            //visit each statement in the loop body
+            var blockResult = ExecuteStatementBlock(loopScope, context.statement());
+            _scopes.Pop();
+
+            return blockResult.ReturnValue;
+        }
+
+        public override Value VisitLoopStatement([NotNull] AssertiveParser.LoopStatementContext context)
+        {
+            var from = Visit(context.fromExp);
+            var to = Visit(context.toExp);
+            var loopScope = new Scope(_scopes.Peek());
+            _scopes.Push(loopScope);
+
+
+            _scopes.Push(loopScope);
+
+            //synchronous loop
+
+            if (context.VAR() != null)
+            {
+                var loopVarName = context.VAR().GetText();
+                loopScope.StoreVariableInCurrentScope(loopVarName, new VoidValue());
+            }
+
+            if (context.parExpression != null)
+            {
+                Visit(context.parExpression);
+            }
+            //visit each statement in the loop body
+            var blockResult = ExecuteStatementBlock(loopScope, context.statement());
+            var output = blockResult.ReturnValue;
+
+            _scopes.Pop();
+
+            return output;
         }
 
         private void AddError(string message, ParserRuleContext context)
