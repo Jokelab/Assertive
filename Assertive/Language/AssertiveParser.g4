@@ -82,7 +82,7 @@ eachStatement : EACH LPAREN VAR IN expression RPAREN LBRACE block = statement* R
 // http request start
 httpMethod : GET | POST | PUT | DELETE | PATCH | OPTIONS | HEAD | TRACE | CONNECT | string;
 
-requestInvocation : httpMethod uri = string (querySection | headerSection | bodySection)* (ASSERT assertFunction = ID)?;
+requestInvocation : httpMethod uri = string (querySection | headerSection | bodySection)*;
 
 requestInvocationStatement: requestInvocation SEMICOLON;
 

@@ -9,11 +9,3 @@ $defaultHeaders = {
 def GetBearerToken(){
     return "Bearer somesecrettoken"; 
 }
-
-out "Hi";
-
-loop from 1 to 100
-{
-  $res = GET "https://www.google.com";
-  assert StatusCode($res) = 200 "Success";
-}

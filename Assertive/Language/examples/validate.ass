@@ -41,12 +41,12 @@ $stuffToValidate = '{
     ]
   }';
 
-def validate "Validator"($par){
-loop from 1 to 200 parallel $par
-{
-  POST "https://app-firely-{{$environment}}-weu-003.azurewebsites.net/api/Validate"
-    body $stuffToValidate;
-}
+
+def validate "Validator"($total, $par){
+    loop from 1 to $total parallel $par
+    {
+      POST "https://app-firely-{{$environment}}-weu-003.azurewebsites.net/api/Validate" body $stuffToValidate;
+    }
 }
 
-validate(5);
+validate(500, 100);

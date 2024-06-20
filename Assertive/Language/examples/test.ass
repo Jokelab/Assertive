@@ -1,1 +1,3 @@
-out GET "http://www.google.com";
+$x = "dfdsdsd";
+
+out $x;

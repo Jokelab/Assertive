@@ -1,67 +1,19 @@
-import "headers.ass";
-$x = FileToString("request.txt");
 
-def myfunc() assert defaultAsserts {
-
+//recursive factorial function
+def factorial ($n){
+    if ($n = 0){
+      return 1;
+    }
+    return $n * factorial($n - 1);
 }
 
-def assertStuff($req) {
-
-}
-
-
-Add($defaultHeaders, "foo","bar");
-
-out $defaultHeaders;
-
-out Get($defaultHeaders, "foo"); 
-
-Remove($defaultHeaders, "foo");
-out $defaultHeaders;
-
-$a = 8;
-$a = "767";
-$x = 3 * 76;
-
-def main{
-
-  GetStarwarsData(5);
-
-  def GetStarwarsPerson($id)
-  {
-
-    //get person to retrieve name
-    $person = GET "https://swapi.dev/api/people/{{$id}}" headers $defaultHeaders; 
-    return $person;
-  }
-
-
-  GetStarwarsPerson(4);
-
-  def PostToWebhook($name, $title){
-  POST "https://webhook.site/2b8be06f-5946-459c-9e99-9ed11b43cc9f" 
-    headers $defaultHeaders
-    body '{
-        "name": "{{$name}}",
-        "title": "{{$title}}",
-      }'
-    ;
-  }
-
-  def GetStarwarsData "Get {{$number}} starwars people" ($number){
+def calcFac "Calc factorial" ($x) {
   
-        $person = GetStarwarsPerson($i);
-
-        $name = JsonPath($person, "$.name");
-        $firstFilmUrl = JsonPath($person, "$.films[0]");
-
-        //get film to retrieve title
-        $filmResponse = GET "{{$firstFilmUrl}}"; 
-        $filmTitle = JsonPath($filmResponse, "$.title");
-
-        PostToWebhook("{{$name}}", "{{$filmTitle}}");
-    
-  }
+  out "{{ $x }}! = {{ factorial($x) }}";
 }
 
-//main;
+def addNumbers ($x, $y){
+ return $x + $y; 
+}
+
+calcFac(25);
