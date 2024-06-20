@@ -61,6 +61,7 @@ namespace Assertive
         public override Task<Value> VisitFunctionStatement([NotNull] AssertiveParser.FunctionStatementContext context)
         {
             var scope = _scopes.Peek();
+
             scope.StoreFunction(context.functionName.Text, context);
             return Task.FromResult<Value>(new VoidValue());
         }
@@ -717,15 +718,6 @@ namespace Assertive
                 throw new InterpretationException("Only 1 body section allowed", context, FilePath);
             }
             var requestModel = await SendRequest(requestMessage);
-
-            if (context.assertFunction != null)
-            {
-                //call the specified assert function with the request as parameter
-            }
-            else
-            {
-                //call all the assert functions that were encountered in the call stack up to here
-            }
 
             return new HttpRequestValue(requestModel);
         }

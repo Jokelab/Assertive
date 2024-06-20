@@ -1,6 +1,4 @@
-﻿using Assertive.Requests;
-
-namespace Assertive.Requests.Http
+﻿namespace Assertive.Requests.Http
 {
     public class HttpRequest : Request
     {
@@ -16,7 +14,9 @@ namespace Assertive.Requests.Http
 
             if (Response != null)
             {
-                return $"{Response.StatusCode}. Duration: {DurationMs}ms";
+                var strTask = Response.Content.ReadAsStringAsync();
+                strTask.Wait();
+                return $"{Response.StatusCode}. Duration: {DurationMs}ms; Content: {strTask.Result}";
             }
             return $"{Request.Method.Method} {Request.RequestUri}";
         }

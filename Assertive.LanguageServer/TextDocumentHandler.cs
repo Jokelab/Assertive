@@ -14,12 +14,14 @@ namespace Assertive.LanguageServer
         private readonly ILanguageServerFacade _facade;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly DocumentManager _documentManager;
+        private readonly IFileSystemService _fileSystemService;
         private const string AssertiveLanguage = "assertive";
 
-        public TextDocumentHandler(ILanguageServerFacade facade, IServiceScopeFactory serviceScopeFactory, DocumentManager documentManager)
+        public TextDocumentHandler(ILanguageServerFacade facade, IServiceScopeFactory serviceScopeFactory, IFileSystemService fileSystemService, DocumentManager documentManager)
         {
             _facade = facade;
             _serviceScopeFactory = serviceScopeFactory;
+            _fileSystemService = fileSystemService;
             _documentManager = documentManager;
         }
         public TextDocumentSyncKind Change { get; } = TextDocumentSyncKind.Incremental;
@@ -51,7 +53,7 @@ namespace Assertive.LanguageServer
 
         public Task<Unit> Handle(DidSaveTextDocumentParams request, CancellationToken cancellationToken)
         {
-            var content = File.ReadAllText(request.TextDocument.Uri.GetFileSystemPath());
+            var content = _fileSystemService.GetFileContent(request.TextDocument.Uri.GetFileSystemPath());
             _documentManager.SetDocument(request.TextDocument.Uri, content);
             AnalyseDocument(request.TextDocument.Uri, content);
             return Task.FromResult(new Unit());
@@ -59,7 +61,7 @@ namespace Assertive.LanguageServer
 
         public Task<Unit> Handle(DidOpenTextDocumentParams request, CancellationToken cancellationToken)
         {
-            var content = File.ReadAllText(request.TextDocument.Uri.GetFileSystemPath());
+            var content = _fileSystemService.GetFileContent(request.TextDocument.Uri.GetFileSystemPath());
             _documentManager.SetDocument(request.TextDocument.Uri, content);
             AnalyseDocument(request.TextDocument.Uri, content, request.TextDocument.Version);
             return Task.FromResult(new Unit());
