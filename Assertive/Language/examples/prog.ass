@@ -12,8 +12,4 @@ def calcFac "Calc factorial" ($x) {
   out "{{ $x }}! = {{ factorial($x) }}";
 }
 
-def addNumbers ($x, $y){
- return $x + $y; 
-}
-
 calcFac(25);

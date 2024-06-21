@@ -3,8 +3,7 @@ import "headers.ass";
 
 def main{
 
-  GetStarwarsData(5);
-  
+
   def GetStarwarsPerson($id)
   {
 
@@ -24,6 +23,7 @@ def main{
     ;
   }
 
+
   def GetStarwarsData "Get {{$number}} starwars people" ($number){
   
       loop $i from 1 to $number{
@@ -41,6 +41,6 @@ def main{
   }
 }
 
-
+GetStarwarsData();
 //call main method
 main();

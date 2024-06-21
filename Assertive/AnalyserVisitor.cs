@@ -68,12 +68,9 @@ namespace Assertive
 
         public override Value VisitFunctionStatement([NotNull] AssertiveParser.FunctionStatementContext context)
         {
-            var scope = _scopes.Peek();
-            scope.StoreFunction(context.functionName.Text, context);
 
             var functionScope = new Scope(_scopes.Peek());
             _scopes.Push(functionScope);
-
 
             //add function parameter values to the scope
             var expectedParameterCount = context.functionParameterList() == null
@@ -178,7 +175,6 @@ namespace Assertive
             _scopes.Push(loopScope);
 
 
-            _scopes.Push(loopScope);
 
             //synchronous loop
 
