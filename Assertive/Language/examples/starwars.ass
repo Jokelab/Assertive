@@ -1,46 +1,43 @@
 import "headers.ass";
 
+//call main method
+StarWars(5);
 
-def main{
+def StarWars($count){
 
+  GetStarwarsData($count);
 
-  def GetStarwarsPerson($id)
+  def GetCharacter($id)
   {
-
     //get person to retrieve name
     $person = GET "https://swapi.dev/api/people/{{$id}}" headers $defaultHeaders; 
+    assert StatusCode($person) = 200;
     return $person;
   }
 
-
   def CallWebhook($name, $title){
-  POST "https://webhook.site/2b8be06f-5946-459c-9e99-9ed11b43cc9f" 
-    headers $defaultHeaders
-    body '{
-        "name": "{{$name}}",
-        "title": "{{$title}}",
-      }'
-    ;
+    POST "https://webhook.site/a6c6dff5-11cd-4647-bec3-f9a771b79984" 
+      headers $defaultHeaders
+      body '{
+          "name": "{{$name}}",
+          "title": "{{$title}}",
+        }'
+      ;
   }
 
-
   def GetStarwarsData "Get {{$number}} starwars people" ($number){
-  
-      loop $i from 1 to $number{
-            $person = GetStarwarsPerson($i);
+      loop $i from 1 to $number 
+      {
+          $person = GetCharacter($i);
 
-            $name = JsonPath($person, "$.name");
-            $firstFilmUrl = JsonPath($person, "$.films[0]");
+          $name = JsonPath($person, "$.name");
+          $firstFilmUrl = JsonPath($person, "$.films[0]");
 
-            //get film to retrieve title
-            $filmResponse = GET "{{$firstFilmUrl}}"; 
-            $filmTitle = JsonPath($filmResponse, "$.title");
+          //get film to retrieve title
+          $filmResponse = GET "{{$firstFilmUrl}}"; 
+          $filmTitle = JsonPath($filmResponse, "$.title");
 
-            CallWebhook("{{$name}}", "{{$filmTitle}}");
+          CallWebhook("{{$name}}", "{{$filmTitle}}");
       }
   }
 }
-
-GetStarwarsData();
-//call main method
-main();
