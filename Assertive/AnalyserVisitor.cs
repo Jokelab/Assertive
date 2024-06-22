@@ -124,7 +124,7 @@ namespace Assertive
                 }
                 else
                 {
-                    AddError($"Function '{functionName}' called but it was not found in the current scope", context, ErrorCodes.FunctionNotFound);
+                    AddError($"Function '{functionName}' called but it was not found in the current context", context, ErrorCodes.FunctionNotFound);
                 }
             }
             return returnValue;
@@ -144,7 +144,7 @@ namespace Assertive
             var variable = scope.GetVariable(context.GetText());
             if (variable == null)
             {
-                AddError($"Variable {context.GetText()} not found", context, ErrorCodes.VariableNotFound);
+                AddError($"Variable '{context.GetText()}' not found in the current context", context, ErrorCodes.VariableNotFound);
             }
             return new VoidValue();
         }
