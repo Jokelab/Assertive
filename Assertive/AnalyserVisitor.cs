@@ -59,7 +59,7 @@ namespace Assertive
                 {
                     if (_functionFactory.BuiltInFunctionExists(function.Name))
                     {
-                        AddError($"Function {function.Name} is already defined", rule);
+                        AddError($"Function {function.Name} is already defined", rule, ErrorCodes.FunctionAlreadyDefined);
                     }
                     scope.StoreFunction(function.Name, function.Context);
                 }
@@ -103,7 +103,7 @@ namespace Assertive
                 var actualParamCount = context.expression().Length;
                 if (function.ParameterCount != actualParamCount)
                 {
-                    AddError($"Expected {function.ParameterCount} but received {actualParamCount} parameters for built-in function {functionName}", context);
+                    AddError($"Expected {function.ParameterCount} but received {actualParamCount} parameters for built-in function {functionName}", context, ErrorCodes.FunctionParamsMismatch);
                 }
             }
             else
@@ -119,12 +119,12 @@ namespace Assertive
                     var actualParamCount = context.expression().Length;
                     if (expectedParameterCount != actualParamCount)
                     {
-                        AddError($"Expected {expectedParameterCount} but received {actualParamCount} parameters for function {functionName}", context);
+                        AddError($"Expected {expectedParameterCount} but received {actualParamCount} parameters for function {functionName}", context, ErrorCodes.FunctionParamsMismatch);
                     }
                 }
                 else
                 {
-                    AddError($"Function '{functionName}' called but it was not found in the current scope", context);
+                    AddError($"Function '{functionName}' called but it was not found in the current scope", context, ErrorCodes.FunctionNotFound);
                 }
             }
             return returnValue;
@@ -144,7 +144,7 @@ namespace Assertive
             var variable = scope.GetVariable(context.GetText());
             if (variable == null)
             {
-                AddError($"Variable {context.GetText()} not found", context);
+                AddError($"Variable {context.GetText()} not found", context, ErrorCodes.VariableNotFound);
             }
             return new VoidValue();
         }
@@ -174,8 +174,6 @@ namespace Assertive
             var loopScope = new Scope(_scopes.Peek());
             _scopes.Push(loopScope);
 
-
-
             //synchronous loop
 
             if (context.VAR() != null)
@@ -198,9 +196,9 @@ namespace Assertive
             return output;
         }
 
-        private void AddError(string message, ParserRuleContext context)
+        private void AddError(string message, ParserRuleContext context, string errorCode)
         {
-            SemanticErrors.Add(new SemanticErrorModel() { Context = context, Message = message, FilePath = FilePath });
+            SemanticErrors.Add(new SemanticErrorModel() { Context = context, Message = message, FilePath = FilePath, ErrorCode = errorCode });
         }
     }
 }

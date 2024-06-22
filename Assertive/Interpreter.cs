@@ -54,7 +54,7 @@ namespace Assertive
                 }
                 catch (InterpretationException interpretationEx)
                 {
-                    result.SemanticErrors.Add(new SemanticErrorModel() { Context = interpretationEx.Context, FilePath = document.Path, Message = interpretationEx.Message });
+                    result.SemanticErrors.Add(new SemanticErrorModel() { Context = interpretationEx.Context, FilePath = document.Path, Message = interpretationEx.Message, ErrorCode = ErrorCodes.RuntimeException });
                 }
             }
             return result;
@@ -111,14 +111,14 @@ namespace Assertive
                 var path = _fileSystemService.CalculateRelativePath(currentPath, importFileName).Replace("\"", "").Replace("'", "");
                 if (_importedFiles.Contains(path))
                 {
-                    interpretationResult.SemanticErrors.Add(new SemanticErrorModel() { Context = importStatement, FilePath = path, Message = $"Already imported file {importFileName} in this file or one of its imports. The same file cannot be imported multiple times." });
+                    interpretationResult.SemanticErrors.Add(new SemanticErrorModel() { Context = importStatement, FilePath = path, Message = $"Already imported file {importFileName} in this file or one of its imports. The same file cannot be imported multiple times.", ErrorCode = ErrorCodes.ImportFileAlreadyImported });
                     continue;
                 }
                 _importedFiles.Add(path);
 
                 if (!_fileSystemService.FileExists(path))
                 {
-                    interpretationResult.SemanticErrors.Add(new SemanticErrorModel() { Context = importStatement, FilePath = path, Message = $"Imported file {importFileName} is not found" });
+                    interpretationResult.SemanticErrors.Add(new SemanticErrorModel() { Context = importStatement, FilePath = path, Message = $"Imported file {importFileName} is not found", ErrorCode = ErrorCodes.ImportFileNotFound });
                     break;
                 }
 
@@ -126,7 +126,7 @@ namespace Assertive
                 var parsedDocument = Parser.Parse(fileContent, path);
                 if (parsedDocument.SyntaxErrors.Count > 0)
                 {
-                    interpretationResult.SemanticErrors.Add(new SemanticErrorModel() { Context = importStatement, FilePath = path, Message = $"Syntax errors found in imported file {importFileName}" });
+                    interpretationResult.SemanticErrors.Add(new SemanticErrorModel() { Context = importStatement, FilePath = path, Message = $"Syntax errors found in imported file {importFileName}", ErrorCode = ErrorCodes.ImportFileSyntaxErrors });
                     break;
                 }
                 var childImports = GetImportedDocuments(parsedDocument.Context, path, interpretationResult);

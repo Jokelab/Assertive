@@ -121,7 +121,8 @@ namespace Assertive.LanguageServer
                         Source = semanticError.Context.GetText(),
                         Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(startPos, endPos),
                         Severity = DiagnosticSeverity.Error,
-                        Message = semanticError.Message
+                        Message = semanticError.Message,
+                        Code = new DiagnosticCode(semanticError.ErrorCode)
                     });
                 }
             }
