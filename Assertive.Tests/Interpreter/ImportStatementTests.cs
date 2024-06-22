@@ -11,7 +11,8 @@
             
             var myfile = "def externalFunction(){ out 'hello from external function'; }";
             FileSystemMock.Setup(x => x.GetFileContent("myfile.ass")).Returns(myfile);
-            
+            FileSystemMock.Setup(x => x.FileExists("myfile.ass")).Returns(true);
+
 
             await Sut.Execute(initialProgram);
 
@@ -31,6 +32,9 @@
             var myfile2 = "def externalFunctionInMyFile2(){ out 'hello from myfile2'; }";
             FileSystemMock.Setup(x => x.GetFileContent("myfile2.ass")).Returns(myfile2);
 
+            FileSystemMock.Setup(x => x.FileExists("myfile1.ass")).Returns(true);
+            FileSystemMock.Setup(x => x.FileExists("myfile2.ass")).Returns(true);
+
 
             await Sut.Execute(initialProgram);
 
@@ -46,6 +50,7 @@
                                   ";
 
             var myfile = "$externalVar = 'external var content';";
+            FileSystemMock.Setup(x => x.FileExists("myfile.ass")).Returns(true);
             FileSystemMock.Setup(x => x.GetFileContent("myfile.ass")).Returns(myfile);
 
 
