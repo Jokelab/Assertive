@@ -34,6 +34,7 @@ namespace Assertive.Extensions
         private static void RegisterBuiltInFunctions(IAssertiveOptions options)
         {
             options.AddBuiltInFunction<Add>();
+            options.AddBuiltInFunction<BasicAuth>();
             options.AddBuiltInFunction<Remove>();
             options.AddBuiltInFunction<Count>();
             options.AddBuiltInFunction<Get>();
