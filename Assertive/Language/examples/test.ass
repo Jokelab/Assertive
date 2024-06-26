@@ -1,27 +1,13 @@
-
-def main{
-
-
-  def GetStarwarsPerson($id)
-  {
-
-    //get person to retrieve name
-    $person = GET "https://swapi.dev/api/people/{{$id}}"; 
-    return $person;
+def parent{
+  def a{
+    out "a";
   }
 
-    def CallWebhook($name, $title){
-  POST "https://webhook.site/2b8be06f-5946-459c-9e99-9ed11b43cc9f" 
-    body '{
-        "name": "{{$name}}",
-        "title": "{{$title}}",
-      }'
-    ;
+  def b{
+    out "b";
   }
+
+  a;b;
 
 }
-
-GetStarwarsPerson(6);
-
-//call main method
-//main();
+parent;

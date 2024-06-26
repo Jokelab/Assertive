@@ -49,4 +49,4 @@ def validate "Validator"($total, $par){
     }
 }
 
-validate(500, 100);
+validate(200, 20);

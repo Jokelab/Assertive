@@ -1,21 +1,13 @@
-$host = "http://swapi.dev/api";
-
-def callApi()
+def fibonacci($n)
 {
-    GET "{{ $host }}/people/1";
-}
-
-def testPerformance "Test run swapi" ($times){
-    loop from 1 to $times
-    {        
-        callApi();
+    if ($n < 2){
+    return $n;
     }
+    
+    return fibonacci($n - 1) + fibonacci($n - 2);
 }
 
-testPerformance(5);
-
-
-$a = 4;
-$b = 3 * $a;
-out $b;
-
+loop $i from 0 to 10
+{
+    out fibonacci($i);
+}

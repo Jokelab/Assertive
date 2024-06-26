@@ -1,15 +1,15 @@
-
-//recursive factorial function
-def factorial ($n){
-    if ($n = 0){
-      return 1;
+$url = "https://www.google.com";
+def Multiple "Multiple requests"{
+    loop from 1 to 10{
+        GET "{{$url}}";
+        sub;
     }
-    return $n * factorial($n - 1);
+ assert 1 = 1;
 }
 
-def calcFac "Calc factorial" ($x) {
-  
-  out "{{ $x }}! = {{ factorial($x) }}";
+def sub  "Sub"{
+    GET "https://www.tweakers.net";
+    GET "https://www.tweakers.net";
 }
 
-calcFac(25);
+Multiple;

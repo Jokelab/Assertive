@@ -1,7 +1,7 @@
 import "headers.ass";
 
 //call main method
-StarWars(5);
+StarWars(3);
 
 def StarWars($count){
 
@@ -12,6 +12,7 @@ def StarWars($count){
     //get person to retrieve name
     $person = GET "https://swapi.dev/api/people/{{$id}}" headers $defaultHeaders; 
     assert StatusCode($person) = 200;
+    assert Duration($person) <= 50 "Fetch person within 50ms";
     return $person;
   }
 
@@ -25,7 +26,7 @@ def StarWars($count){
       ;
   }
 
-  def GetStarwarsData "Get {{$number}} starwars people" ($number){
+  def GetStarwarsData "Get {{$number}} starwars characters" ($number){
       loop $i from 1 to $number 
       {
           $person = GetCharacter($i);
