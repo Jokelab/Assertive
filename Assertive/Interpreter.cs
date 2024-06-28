@@ -1,7 +1,5 @@
 ﻿using Assertive.Exceptions;
 using Assertive.Models;
-using Microsoft.Extensions.Logging;
-using System.Reflection;
 
 namespace Assertive
 {
@@ -28,7 +26,9 @@ namespace Assertive
 
         private string GetCurrentPath()
         {
-            return _importedFiles.Count > 0 ? _importedFiles[0] : Assembly.GetExecutingAssembly().Location;
+            return _importedFiles.Count > 0 
+                ? _importedFiles[0] 
+                : System.Reflection.Assembly.GetExecutingAssembly().Location;
         }
 
         public async Task<InterpretationResult> Execute(string program)
