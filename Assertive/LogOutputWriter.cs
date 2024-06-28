@@ -38,7 +38,7 @@ namespace Assertive
 
         public Task AnnotatedFunctionEnd(AnnotatedFunction annotatedFunction)
         {
-            _logger.LogInformation($"End {annotatedFunction.FunctionName} ({annotatedFunction.Annotation}) - Duration: {annotatedFunction.DurationMs}");
+            _logger.LogInformation($"End {annotatedFunction.FunctionName} ({annotatedFunction.Annotation}) - Duration: {annotatedFunction.TotalDurationMs}");
             return Task.CompletedTask;
         }
 

@@ -1,4 +1,5 @@
 ﻿using Assertive.Models;
+using Assertive.Requests.Http;
 using Assertive.Types;
 using static AssertiveParser;
 
@@ -9,6 +10,9 @@ namespace Assertive
         private Dictionary<string, Value> _variables = [];
         private Dictionary<string, FunctionModel> _functions = [];
         private readonly Scope? _parentScope;
+        public bool IsAnnotatedFunctionScope = false;
+        private List<HttpRequest> _recordedRequests = [];
+        private List<AssertResult> _recordedAsserts = [];
 
         public bool ProtectedScope { get; set; } = false;
 
@@ -85,23 +89,36 @@ namespace Assertive
 
         public bool ContinueFlagRaised => _continueFlag;
 
-        /// <summary>
-        /// Get all assert functions from the current scope down to the root scope
-        /// </summary>
-        /// <returns></returns>
-        public List<FunctionModel> GetAssertFunctions()
+        public void RecordRequest(HttpRequest request)
         {
-            var functions = new List<FunctionModel>();
-            functions.AddRange(_functions.Where(f => f.Value.IsAssertFunction).Select(f => f.Value));
-
-            var parent = GetParent();
-            while (parent != null)
+            //store request in every scope of an annotated function
+            var scope = this;
+            while (scope != null)
             {
-                functions.AddRange(_functions.Where(f => f.Value.IsAssertFunction).Select(f => f.Value));
-                parent = parent.GetParent();
+                if (scope.IsAnnotatedFunctionScope)
+                {
+                    scope._recordedRequests.Add(request);
+                }
+                scope = scope.GetParent();
             }
-            return functions;
+        }
 
+        public long RecordedRequestDuration => _recordedRequests.Sum(x => x.DurationMs);
+
+        public long TotalRequests => _recordedRequests.Count;
+
+        public void RecordAssert(AssertResult assertResult)
+        {
+            //store assert in every scope of an annotated function
+            var scope = this;
+            while (scope != null)
+            {
+                if (scope.IsAnnotatedFunctionScope)
+                {
+                    scope._recordedAsserts.Add(assertResult);
+                }
+                scope = scope.GetParent();
+            }
         }
     }
 }

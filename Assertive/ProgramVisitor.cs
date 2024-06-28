@@ -117,6 +117,7 @@ namespace Assertive
                 {
                     await outputWriter.Assertion(assertResult);
                 }
+                _scopes.Peek().RecordAssert(assertResult);
             }
             else
             {
@@ -501,7 +502,7 @@ namespace Assertive
                     }
 
                     //create new scope for the function block and its parameter variables
-                    var functionScope = new Scope(_scopes.Peek());
+                    var functionScope = new Scope(_scopes.Peek()) { IsAnnotatedFunctionScope = true };
 
                     //look ahead for function declarations inside this function
                     RegisterFunctionStatementsInScope(functionScope, functionStatement.statement());
@@ -528,9 +529,10 @@ namespace Assertive
                     sw.Start();
                     var blockResult = await ExecuteStatementBlock(functionScope, functionStatement.statement()).ConfigureAwait(false);
                     sw.Stop();
+
                     if (description != null)
                     {
-                        var annotatedFunctionEnd = new AnnotatedFunction() { Invocation = "End", Annotation = description.Value, FunctionName = functionName, DurationMs = (long)sw.Elapsed.TotalMilliseconds };
+                        var annotatedFunctionEnd = new AnnotatedFunction() { Invocation = "End", Annotation = description.Value, FunctionName = functionName, TotalDurationMs = (long)sw.Elapsed.TotalMilliseconds, TotalRequests = functionScope.TotalRequests, TotalRequestDurationMs = functionScope.RecordedRequestDuration };
                         foreach (var writer in _outputWriters) await writer.AnnotatedFunctionEnd(annotatedFunctionEnd);
                     }
                     returnValue = blockResult.ReturnValue;
@@ -718,6 +720,7 @@ namespace Assertive
                 throw new InterpretationException("Only 1 body section allowed", context, FilePath);
             }
             var requestModel = await SendRequest(requestMessage);
+            _scopes.Peek().RecordRequest(requestModel);
 
             return new HttpRequestValue(requestModel);
         }

@@ -6,7 +6,7 @@ namespace Assertive.Functions
     /// <summary>
     /// Returns the numeric statuscode of the HTTP response
     /// </summary>
-    public class StatusCode : IFunction
+    internal class StatusCode : IFunction
     {
         public int ParameterCount => 1;
 

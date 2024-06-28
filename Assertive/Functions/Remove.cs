@@ -3,7 +3,7 @@ using Assertive.Types;
 
 namespace Assertive.Functions
 {
-    public class Remove : IFunction
+    internal class Remove : IFunction
     {
         public int ParameterCount => 2;
 

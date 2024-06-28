@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Assertive.Functions
 {
-    public class JsonPath : IFunction
+    internal class JsonPath : IFunction
     {
 
         public int ParameterCount => 2;

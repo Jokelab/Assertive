@@ -9,7 +9,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Server.Capabilities;
 
 namespace Assertive.LanguageServer
 {
-    public class TextDocumentHandler : IDidChangeTextDocumentHandler, IDidSaveTextDocumentHandler, IDidOpenTextDocumentHandler
+    internal class TextDocumentHandler : IDidChangeTextDocumentHandler, IDidSaveTextDocumentHandler, IDidOpenTextDocumentHandler
     {
         private readonly ILanguageServerFacade _facade;
         private readonly IServiceScopeFactory _serviceScopeFactory;

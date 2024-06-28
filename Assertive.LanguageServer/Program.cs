@@ -12,7 +12,7 @@ var server = await LanguageServer.From(options =>
                        return Task.CompletedTask; }
                    )
                    .WithHandler<TextDocumentHandler>()
-                   .WithHandler<StartInterpreterHandler>()
+                   .WithHandler<InterpreterRequestHandler>()
                    .WithServices(ConfigureServices)
            );
 

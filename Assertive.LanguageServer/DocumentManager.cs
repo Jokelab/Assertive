@@ -1,16 +1,15 @@
 ﻿using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Assertive.LanguageServer
 {
 
-    public class DocumentManager
+    /// <summary>
+    /// Helper class to keep track of document content
+    /// </summary>
+    internal class DocumentManager
     {
         private readonly ConcurrentDictionary<DocumentUri, StringBuilder> _documents = new();
 

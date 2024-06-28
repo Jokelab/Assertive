@@ -1,15 +1,11 @@
-$url = "https://www.google.com";
-def Multiple "Multiple requests"{
-    loop from 1 to 10{
-        GET "{{$url}}";
-        sub;
+$host = "https://swapi.dev/api/";
+def main "Loop Starwars characters"
+{
+    loop $personId from 1 to 3
+    {
+        $person = GET "{{ $host }}/people/{{ $personId }}";
+        out JsonPath($person, "$.name");
     }
- assert 1 = 1;
 }
 
-def sub  "Sub"{
-    GET "https://www.tweakers.net";
-    GET "https://www.tweakers.net";
-}
-
-Multiple;
+main;

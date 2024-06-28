@@ -1,6 +1,5 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
-using Assertive.Exceptions;
 using Assertive.Functions;
 using Assertive.Models;
 using Assertive.Types;

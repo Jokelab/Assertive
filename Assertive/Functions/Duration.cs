@@ -3,7 +3,7 @@ using Assertive.Types;
 
 namespace Assertive.Functions
 {
-    public class Duration : IFunction
+    internal class Duration : IFunction
     {
         public int ParameterCount => 1;
 
