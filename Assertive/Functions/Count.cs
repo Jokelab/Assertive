@@ -19,7 +19,7 @@ namespace Assertive.Functions
             }
             else
             {
-                throw new FunctionExecutionException("The first argument should be a dictionary", this);
+                throw new FunctionExecutionException("The first argument should be a dictionary or list", this);
             }
         }
     }
