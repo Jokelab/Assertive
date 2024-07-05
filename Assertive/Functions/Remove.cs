@@ -12,7 +12,7 @@ namespace Assertive.Functions
             if (values[0] is DictionaryValue dic)
             {
                 var key = values[1];
-                dic.RemoveEntry(key);
+                dic.RemoveEntries(key);
             }
             else
             {

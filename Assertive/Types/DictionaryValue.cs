@@ -15,13 +15,9 @@ namespace Assertive.Types
             _entries.Add(entry);
         }
 
-        public void RemoveEntry(Value key)
+        public void RemoveEntries(Value key)
         {
-            var entryToRemove = _entries.FirstOrDefault(x => x.Key.ToString() == key.ToString());
-            if (entryToRemove != null)
-            {
-                _entries.Remove(entryToRemove);
-            }
+          _entries.RemoveAll(x => x.Key.ToString() == key.ToString());
         }
 
         public Value GetEntry(Value key)
