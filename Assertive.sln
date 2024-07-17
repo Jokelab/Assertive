@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Assertive.Cli", "Assertive.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Assertive.Tests", "Assertive.Tests\Assertive.Tests.csproj", "{F8BB25E2-F8B3-431E-A2F7-552A78B3EB48}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Assertive.InterpreterServer", "Assertive.InterpreterServer\Assertive.InterpreterServer.csproj", "{C96819D1-427C-4D4C-BC28-E0F18B956D94}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Assertive.LanguageServer", "Assertive.LanguageServer\Assertive.LanguageServer.csproj", "{DC1A05BA-7ABC-4980-A138-EDADD66D6330}"
 EndProject
 Global
@@ -31,10 +29,6 @@ Global
 		{F8BB25E2-F8B3-431E-A2F7-552A78B3EB48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8BB25E2-F8B3-431E-A2F7-552A78B3EB48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8BB25E2-F8B3-431E-A2F7-552A78B3EB48}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C96819D1-427C-4D4C-BC28-E0F18B956D94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C96819D1-427C-4D4C-BC28-E0F18B956D94}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C96819D1-427C-4D4C-BC28-E0F18B956D94}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C96819D1-427C-4D4C-BC28-E0F18B956D94}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DC1A05BA-7ABC-4980-A138-EDADD66D6330}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DC1A05BA-7ABC-4980-A138-EDADD66D6330}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC1A05BA-7ABC-4980-A138-EDADD66D6330}.Release|Any CPU.ActiveCfg = Release|Any CPU
