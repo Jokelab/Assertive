@@ -1,11 +1,2 @@
-$host = "https://swapi.dev/api/";
-def main "Loop Starwars characters"
-{
-    loop $personId from 1 to 3
-    {
-        $person = GET "{{ $host }}/people/{{ $personId }}";
-        out JsonPath($person, "$.name");
-    }
-}
-
-main;
+$x = GET "https://www.google.com/" headers {'aaa': 3 * 4};
+out "hoiioii";

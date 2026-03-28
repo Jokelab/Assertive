@@ -1,0 +1,20 @@
+
+//get access token
+$tokenResponse = POST "https://sso-int.mercedes-benz.com/as/token.oauth2" 
+body formurlencoded {
+    'grant_type': 'client_credentials',
+    'client_id': 'a60ff3b7-a70d-4b62-bff4-ef36987ecc25', 
+    'client_secret': 'ZlHmcZhUtPLhezIavpitwSGiSbUyxrduUrylfjaOdVyXafRiMHXErvjHBFjLfjvN'
+};
+
+$accessToken = JsonPath($tokenResponse, "$.access_token");
+
+$base = "https://api-int.ccc.mercedes-benz.com/translations-api-oauth";
+
+$res = GET "{{$base}}/is-alive" 
+
+headers {
+    "Authorization": "Bearer {{$accessToken}}"
+};
+out $res;
+assert StatusCode($res) = 200 "Status code should be 200";

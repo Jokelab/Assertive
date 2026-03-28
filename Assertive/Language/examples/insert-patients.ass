@@ -1,0 +1,72 @@
+
+import "bigpatient.ass";
+$environment = "dev";
+
+def createPatientBody($patientId){
+ 
+  $resource = '{
+                "resourceType": "Patient",
+                "id": "{{ $patientId }}",
+                "meta": {
+                    "extension": [
+                        {
+                            "url": "http://zuyderland.nl/fhir/source/lastUpdated",
+                            "valueDateTime": "2025-02-07T10:18:31+00:00"
+                        }
+                    ],
+                    "profile": [
+                        "http://fhir.nl/fhir/StructureDefinition/nl-core-patient"
+                    ],
+                    "versionId": "b97073e0-e880-43f0-a08e-342b277c5f60",
+                    "lastUpdated": "2025-03-10T10:17:32.587+00:00"
+                },
+                "identifier": [
+                    {
+                        "system": "http://fhir.nl/fhir/NamingSystem/bsn",
+                        "value": "bsn-{{ $patientId}}"
+                    },
+                    {
+                        "system": "2.16.840.1.113883.2.4.3.133",
+                        "value": "other-{{ $patientId }}"
+                    }
+                ],
+                "name": [
+                    {
+                        "family": "Family name for {{ $patientId }}",
+                    }
+                ],
+                "gender": "male",
+                "birthDate": "1938-06-27"
+            }';
+    return $resource;
+}
+            
+
+def createPatientId($i){
+    return "RB-test-{{ $i }}";
+}
+
+def putPatients($from, $to){
+    loop $i from $from to $to
+    {
+      $patientId =  createPatientId($i);
+
+      PUT "https://app-firely-{{ $environment }}-weu-002.azurewebsites.net/Patient/{{ $patientId }}"      
+        headers {
+          "Source-Last-Updated": "2025-01-01 00:00"
+        }     
+        body createBigPatient($patientId);
+    }
+}
+
+def deletePatient($from, $to){
+  loop $i from $from to $to
+  {
+    $patientId =  createPatientId($i);
+    POST "https://app-firely-{{ $environment }}-weu-002.azurewebsites.net/Patient/{{ $patientId }}/$purge";
+  }
+  
+}
+//putPatients(1001, 10000);
+deletePatient(1, 10000);
+

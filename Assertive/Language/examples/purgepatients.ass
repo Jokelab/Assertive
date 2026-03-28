@@ -1,8 +1,9 @@
-import "testpatients.ass";
+import "middlepatients.ass";
 
 $total = 0;
-each($patientId in $patients){
+each($patientId in $middle){
     $purgeResponse = POST "https://app-firely-acc-weu-002.azurewebsites.net/Patient/PAT-{{$patientId}}/$purge";
     $total = $total + Duration($purgeResponse);
 }
-out "Total: {{$total}}ms. Average: {{ $total / Count($patients) }}ms";
+out "Total: {{$total}}ms. Average: {{ $total / Count($middle) }}ms";
+
